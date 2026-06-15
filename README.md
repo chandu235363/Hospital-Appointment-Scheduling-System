@@ -18,16 +18,31 @@ This system automates the complex task of scheduling patient appointments with d
 
 ## Architecture
 
-```
-frontend/                    ← React + Vite (port 5173)
-                              Modern, interactive UI for hospital staff
+Hospital Appointment Scheduling System using CSP
 
-backend/                     ← Node.js + Express + SQLite (port 3001)
-                              RESTful API for all hospital operations
+Technologies:
+- React
+- Node.js
+- Python Flask
+- SQLite
 
-ai-engine/                   ← Python Flask + CSP Solver (port 5001)
-                              Advanced scheduling algorithms
-```
+Features:
+- Patient Management
+- Doctor Management
+- Appointment Slot Generation
+- CSP-Based Scheduling
+- Analytics Dashboard
+
+Algorithms:
+- AC-3
+- MRV
+- LCV
+- Forward Checking
+- Backtracking
+- Hill Climbing
+
+GitHub:
+https://github.com/chandu235363/Hospital-Appointment-Scheduling-System
 
 ## Technology Stack
 
