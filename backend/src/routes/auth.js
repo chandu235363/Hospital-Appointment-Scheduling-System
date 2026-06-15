@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 const { v4: uuidv4 } = require('uuid');
 const db = require('../db/db');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'interview_scheduler_secret_2024';
+const JWT_SECRET = process.env.JWT_SECRET || 'hospital_scheduler_secret_2024';
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
@@ -14,7 +14,7 @@ router.post('/register', async (req, res) => {
     if (!name || !email || !password || !role) {
       return res.status(400).json({ error: 'All fields are required' });
     }
-    const validRoles = ['admin', 'hr', 'interviewer', 'candidate'];
+    const validRoles = ['admin', 'receptionist', 'doctor', 'patient'];
     if (!validRoles.includes(role)) {
       return res.status(400).json({ error: 'Invalid role' });
     }
@@ -30,13 +30,13 @@ router.post('/register', async (req, res) => {
     ).run(userId, name, email, hashed, role);
 
     // Create role-specific profile
-    if (role === 'candidate') {
+    if (role === 'patient') {
       db.prepare(
-        'INSERT INTO candidates (id, user_id) VALUES (?, ?)'
+        'INSERT INTO patients (id, user_id) VALUES (?, ?)'
       ).run(uuidv4(), userId);
-    } else if (role === 'interviewer') {
+    } else if (role === 'doctor') {
       db.prepare(
-        'INSERT INTO interviewers (id, user_id) VALUES (?, ?)'
+        'INSERT INTO doctors (id, user_id) VALUES (?, ?)'
       ).run(uuidv4(), userId);
     }
 

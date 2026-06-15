@@ -1,61 +1,62 @@
--- Automated Interview Slot Scheduler — SQLite Schema
+-- Hospital Appointment Scheduling System — SQLite Schema
+-- Uses Constraint Satisfaction Problems (CSP) for optimal scheduling
 
 CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT NOT NULL UNIQUE,
   password TEXT NOT NULL,
-  role TEXT NOT NULL CHECK(role IN ('admin','hr','interviewer','candidate')),
+  role TEXT NOT NULL CHECK(role IN ('admin','receptionist','doctor','patient')),
   created_at TEXT DEFAULT (datetime('now'))
 );
 
-CREATE TABLE IF NOT EXISTS candidates (
+CREATE TABLE IF NOT EXISTS patients (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  applied_role TEXT,
-  experience_yrs INTEGER DEFAULT 0,
+  medical_condition TEXT,
+  age INTEGER DEFAULT 0,
   priority INTEGER DEFAULT 5,
-  rounds INTEGER DEFAULT 1,
+  required_appointments INTEGER DEFAULT 1,
   status TEXT DEFAULT 'pending' CHECK(status IN ('pending','scheduled','completed','cancelled')),
   created_at TEXT DEFAULT (datetime('now'))
 );
 
-CREATE TABLE IF NOT EXISTS candidate_availability (
+CREATE TABLE IF NOT EXISTS patient_availability (
   id TEXT PRIMARY KEY,
-  candidate_id TEXT NOT NULL REFERENCES candidates(id) ON DELETE CASCADE,
-  slot_id TEXT NOT NULL
+  patient_id TEXT NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+  appointment_slot_id TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS interviewers (
+CREATE TABLE IF NOT EXISTS doctors (
   id TEXT PRIMARY KEY,
   user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  department TEXT,
-  expertise TEXT DEFAULT '[]',
-  max_per_day INTEGER DEFAULT 5,
+  specialization TEXT,
+  certifications TEXT DEFAULT '[]',
+  max_patients_per_day INTEGER DEFAULT 5,
   created_at TEXT DEFAULT (datetime('now'))
 );
 
-CREATE TABLE IF NOT EXISTS interviewer_availability (
+CREATE TABLE IF NOT EXISTS doctor_availability (
   id TEXT PRIMARY KEY,
-  interviewer_id TEXT NOT NULL REFERENCES interviewers(id) ON DELETE CASCADE,
-  slot_id TEXT NOT NULL
+  doctor_id TEXT NOT NULL REFERENCES doctors(id) ON DELETE CASCADE,
+  appointment_slot_id TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS rooms (
+CREATE TABLE IF NOT EXISTS consultation_rooms (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL UNIQUE,
-  capacity INTEGER DEFAULT 2,
+  room_type TEXT DEFAULT 'General',
   equipment TEXT DEFAULT '[]',
   is_active INTEGER DEFAULT 1,
   created_at TEXT DEFAULT (datetime('now'))
 );
 
-CREATE TABLE IF NOT EXISTS time_slots (
+CREATE TABLE IF NOT EXISTS appointment_slots (
   id TEXT PRIMARY KEY,
   date TEXT NOT NULL,
   start_time TEXT NOT NULL,
   end_time TEXT NOT NULL,
-  duration INTEGER DEFAULT 60,
+  duration INTEGER DEFAULT 30,
   is_break INTEGER DEFAULT 0,
   created_at TEXT DEFAULT (datetime('now'))
 );
@@ -70,7 +71,7 @@ CREATE TABLE IF NOT EXISTS constraints_config (
   created_at TEXT DEFAULT (datetime('now'))
 );
 
-CREATE TABLE IF NOT EXISTS schedules (
+CREATE TABLE IF NOT EXISTS appointment_schedules (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   status TEXT DEFAULT 'draft' CHECK(status IN ('draft','confirmed','completed')),
@@ -81,14 +82,14 @@ CREATE TABLE IF NOT EXISTS schedules (
   created_at TEXT DEFAULT (datetime('now'))
 );
 
-CREATE TABLE IF NOT EXISTS schedule_assignments (
+CREATE TABLE IF NOT EXISTS appointment_assignments (
   id TEXT PRIMARY KEY,
-  schedule_id TEXT NOT NULL REFERENCES schedules(id) ON DELETE CASCADE,
-  candidate_id TEXT NOT NULL REFERENCES candidates(id),
-  interviewer_id TEXT NOT NULL REFERENCES interviewers(id),
-  room_id TEXT NOT NULL REFERENCES rooms(id),
-  slot_id TEXT NOT NULL REFERENCES time_slots(id),
-  round_num INTEGER DEFAULT 1,
+  schedule_id TEXT NOT NULL REFERENCES appointment_schedules(id) ON DELETE CASCADE,
+  patient_id TEXT NOT NULL REFERENCES patients(id),
+  doctor_id TEXT NOT NULL REFERENCES doctors(id),
+  consultation_room_id TEXT NOT NULL REFERENCES consultation_rooms(id),
+  appointment_slot_id TEXT NOT NULL REFERENCES appointment_slots(id),
+  appointment_num INTEGER DEFAULT 1,
   status TEXT DEFAULT 'confirmed' CHECK(status IN ('confirmed','cancelled','rescheduled')),
   created_at TEXT DEFAULT (datetime('now'))
 );

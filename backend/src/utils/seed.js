@@ -1,5 +1,6 @@
 /**
- * Seed script: Creates demo users, candidates, interviewers, rooms, slots, and constraints.
+ * Seed script: Creates demo users, patients, doctors, consultation rooms, appointment slots, and constraints.
+ * Hospital Appointment Scheduling System using CSP
  * Run: node src/utils/seed.js
  */
 require('dotenv').config();
@@ -8,28 +9,28 @@ const { v4: uuidv4 } = require('uuid');
 const db = require('../db/db');
 
 async function seed() {
-  console.log('🌱 Seeding database...');
+  console.log('🌱 Seeding Hospital Appointment Scheduling database...');
 
   // ── USERS ───────────────────────────────────────────────────────────────────
   const users = [
-    { name: 'Admin User', email: 'admin@scheduler.com', password: 'admin123', role: 'admin' },
-    { name: 'HR Manager', email: 'hr@scheduler.com', password: 'hr1234', role: 'hr' },
-    { name: 'Dr. Priya Sharma', email: 'priya@scheduler.com', password: 'pass123', role: 'interviewer' },
-    { name: 'Mr. Raj Kumar', email: 'raj@scheduler.com', password: 'pass123', role: 'interviewer' },
-    { name: 'Ms. Aisha Patel', email: 'aisha@scheduler.com', password: 'pass123', role: 'interviewer' },
-    { name: 'Alice Johnson', email: 'alice@candidate.com', password: 'pass123', role: 'candidate' },
-    { name: 'Bob Williams', email: 'bob@candidate.com', password: 'pass123', role: 'candidate' },
-    { name: 'Carol Davis', email: 'carol@candidate.com', password: 'pass123', role: 'candidate' },
-    { name: 'David Lee', email: 'david@candidate.com', password: 'pass123', role: 'candidate' },
+    { name: 'Admin User', email: 'admin@hospital.com', password: 'admin123', role: 'admin' },
+    { name: 'Receptionist Manager', email: 'receptionist@hospital.com', password: 'reception1', role: 'receptionist' },
+    { name: 'Dr. Priya Sharma', email: 'priya@hospital.com', password: 'pass123', role: 'doctor' },
+    { name: 'Dr. Raj Kumar', email: 'raj@hospital.com', password: 'pass123', role: 'doctor' },
+    { name: 'Dr. Aisha Patel', email: 'aisha@hospital.com', password: 'pass123', role: 'doctor' },
+    { name: 'Alice Johnson', email: 'alice@patient.com', password: 'pass123', role: 'patient' },
+    { name: 'Bob Williams', email: 'bob@patient.com', password: 'pass123', role: 'patient' },
+    { name: 'Carol Davis', email: 'carol@patient.com', password: 'pass123', role: 'patient' },
+    { name: 'David Lee', email: 'david@patient.com', password: 'pass123', role: 'patient' },
   ];
 
   const insertUser = db.prepare('INSERT OR IGNORE INTO users (id, name, email, password, role) VALUES (?, ?, ?, ?, ?)');
-  const insertCandidate = db.prepare('INSERT OR IGNORE INTO candidates (id, user_id, applied_role, experience_yrs, priority, rounds) VALUES (?, ?, ?, ?, ?, ?)');
-  const insertInterviewer = db.prepare('INSERT OR IGNORE INTO interviewers (id, user_id, department, expertise, max_per_day) VALUES (?, ?, ?, ?, ?)');
+  const insertPatient = db.prepare('INSERT OR IGNORE INTO patients (id, user_id, medical_condition, age, priority, required_appointments) VALUES (?, ?, ?, ?, ?, ?)');
+  const insertDoctor = db.prepare('INSERT OR IGNORE INTO doctors (id, user_id, specialization, certifications, max_patients_per_day) VALUES (?, ?, ?, ?, ?)');
 
   const userIds = {};
-  const candidateIds = {};
-  const interviewerIds = {};
+  const patientIds = {};
+  const doctorIds = {};
 
   for (const u of users) {
     const hashed = bcrypt.hashSync(u.password, 10);
@@ -38,59 +39,66 @@ async function seed() {
     insertUser.run(uid, u.name, u.email, hashed, u.role);
   }
 
-  // Candidates
-  const candidateData = [
-    { email: 'alice@candidate.com', role: 'Software Engineer', exp: 3, priority: 1, rounds: 2 },
-    { email: 'bob@candidate.com', role: 'Data Analyst', exp: 1, priority: 2, rounds: 1 },
-    { email: 'carol@candidate.com', role: 'Project Manager', exp: 5, priority: 3, rounds: 2 },
-    { email: 'david@candidate.com', role: 'UI/UX Designer', exp: 2, priority: 4, rounds: 1 },
+  // Patients
+  const patientData = [
+    { email: 'alice@patient.com', condition: 'Hypertension', age: 45, priority: 1, appointments: 2 },
+    { email: 'bob@patient.com', condition: 'Diabetes Type 2', age: 38, priority: 2, appointments: 1 },
+    { email: 'carol@patient.com', condition: 'Cardiovascular Disease', age: 62, priority: 3, appointments: 2 },
+    { email: 'david@patient.com', condition: 'General Checkup', age: 28, priority: 4, appointments: 1 },
   ];
-  for (const cd of candidateData) {
-    const cid = uuidv4();
-    candidateIds[cd.email] = cid;
-    insertCandidate.run(cid, userIds[cd.email], cd.role, cd.exp, cd.priority, cd.rounds);
+  for (const pd of patientData) {
+    const pid = uuidv4();
+    patientIds[pd.email] = pid;
+    insertPatient.run(pid, userIds[pd.email], pd.condition, pd.age, pd.priority, pd.appointments);
   }
 
-  // Interviewers
-  const interviewerData = [
-    { email: 'priya@scheduler.com', dept: 'Engineering', expertise: ['Python','AI','ML'], max: 4 },
-    { email: 'raj@scheduler.com', dept: 'Data Science', expertise: ['SQL','Analytics'], max: 5 },
-    { email: 'aisha@scheduler.com', dept: 'Design', expertise: ['Figma','UX Research'], max: 3 },
+  // Doctors with specializations
+  const doctorData = [
+    { email: 'priya@hospital.com', spec: 'Cardiology', certs: ['MD - Cardiology', 'Fellowship - American Heart Association'], max: 4 },
+    { email: 'raj@hospital.com', spec: 'Endocrinology', certs: ['MD - Endocrinology', 'Diabetes Management Certificate'], max: 5 },
+    { email: 'aisha@hospital.com', spec: 'General Medicine', certs: ['MD - General Medicine', 'Internal Medicine'], max: 6 },
   ];
-  for (const iv of interviewerData) {
-    const ivid = uuidv4();
-    interviewerIds[iv.email] = ivid;
-    insertInterviewer.run(ivid, userIds[iv.email], iv.dept, JSON.stringify(iv.expertise), iv.max);
+  for (const dd of doctorData) {
+    const did = uuidv4();
+    doctorIds[dd.email] = did;
+    insertDoctor.run(did, userIds[dd.email], dd.spec, JSON.stringify(dd.certs), dd.max);
   }
 
-  // ── ROOMS ────────────────────────────────────────────────────────────────────
+  // ── CONSULTATION ROOMS ────────────────────────────────────────────────────────
   const rooms = [
-    { name: 'Room A', capacity: 3, equipment: ['Whiteboard', 'Projector'] },
-    { name: 'Room B', capacity: 2, equipment: ['Whiteboard'] },
-    { name: 'Room C', capacity: 4, equipment: ['TV Screen', 'Webcam'] },
+    { name: 'Consultation Room A', type: 'General', equipment: ['BP Monitor', 'ECG Machine'] },
+    { name: 'Consultation Room B', type: 'Cardiology', equipment: ['Echocardiography', 'Holter Monitor'] },
+    { name: 'Consultation Room C', type: 'General', equipment: ['Glucometer', 'Weighing Scale'] },
   ];
-  const insertRoom = db.prepare('INSERT OR IGNORE INTO rooms (id, name, capacity, equipment) VALUES (?, ?, ?, ?)');
+  const insertRoom = db.prepare('INSERT OR IGNORE INTO consultation_rooms (id, name, room_type, equipment) VALUES (?, ?, ?, ?)');
   const roomIds = {};
   for (const r of rooms) {
     const rid = uuidv4();
     roomIds[r.name] = rid;
-    insertRoom.run(rid, r.name, r.capacity, JSON.stringify(r.equipment));
+    insertRoom.run(rid, r.name, r.type, JSON.stringify(r.equipment));
   }
 
-  // ── TIME SLOTS ───────────────────────────────────────────────────────────────
+  // ── APPOINTMENT SLOTS ───────────────────────────────────────────────────────────
   const dates = ['2025-07-01', '2025-07-02', '2025-07-03'];
   const times = [
-    { start: '09:00', end: '10:00', isBreak: false },
-    { start: '10:00', end: '11:00', isBreak: false },
-    { start: '11:00', end: '12:00', isBreak: false },
-    { start: '12:00', end: '13:00', isBreak: true },  // Lunch
-    { start: '13:00', end: '14:00', isBreak: false },
-    { start: '14:00', end: '15:00', isBreak: false },
-    { start: '15:00', end: '16:00', isBreak: false },
-    { start: '16:00', end: '17:00', isBreak: false },
+    { start: '09:00', end: '09:30', isBreak: false },
+    { start: '09:30', end: '10:00', isBreak: false },
+    { start: '10:00', end: '10:30', isBreak: false },
+    { start: '10:30', end: '11:00', isBreak: false },
+    { start: '11:00', end: '11:30', isBreak: false },
+    { start: '11:30', end: '12:00', isBreak: false },
+    { start: '12:00', end: '13:00', isBreak: true },  // Lunch break
+    { start: '13:00', end: '13:30', isBreak: false },
+    { start: '13:30', end: '14:00', isBreak: false },
+    { start: '14:00', end: '14:30', isBreak: false },
+    { start: '14:30', end: '15:00', isBreak: false },
+    { start: '15:00', end: '15:30', isBreak: false },
+    { start: '15:30', end: '16:00', isBreak: false },
+    { start: '16:00', end: '16:30', isBreak: false },
+    { start: '16:30', end: '17:00', isBreak: false },
   ];
 
-  const insertSlot = db.prepare('INSERT OR IGNORE INTO time_slots (id, date, start_time, end_time, duration, is_break) VALUES (?, ?, ?, ?, 60, ?)');
+  const insertSlot = db.prepare('INSERT OR IGNORE INTO appointment_slots (id, date, start_time, end_time, duration, is_break) VALUES (?, ?, ?, ?, 30, ?)');
   const slotIds = {}; // date_startTime → id
 
   for (const date of dates) {
@@ -103,48 +111,49 @@ async function seed() {
   }
 
   // ── AVAILABILITY ─────────────────────────────────────────────────────────────
-  // All candidates available all non-break slots on all 3 days
+  // All patients available all non-break slots on all 3 days
   const availSlots = Object.entries(slotIds).filter(([k]) => !k.includes('12:00')).map(([, v]) => v);
 
-  const insertCandidateAvail = db.prepare('INSERT OR IGNORE INTO candidate_availability (id, candidate_id, slot_id) VALUES (?, ?, ?)');
-  const insertIvAvail = db.prepare('INSERT OR IGNORE INTO interviewer_availability (id, interviewer_id, slot_id) VALUES (?, ?, ?)');
+  const insertPatientAvail = db.prepare('INSERT OR IGNORE INTO patient_availability (id, patient_id, appointment_slot_id) VALUES (?, ?, ?)');
+  const insertDoctorAvail = db.prepare('INSERT OR IGNORE INTO doctor_availability (id, doctor_id, appointment_slot_id) VALUES (?, ?, ?)');
 
-  for (const cid of Object.values(candidateIds)) {
-    for (const sid of availSlots) insertCandidateAvail.run(uuidv4(), cid, sid);
+  for (const pid of Object.values(patientIds)) {
+    for (const sid of availSlots) insertPatientAvail.run(uuidv4(), pid, sid);
   }
 
-  // Interviewers have partial availability
-  const ivAvailMap = {
-    'priya@scheduler.com': availSlots.slice(0, 14),
-    'raj@scheduler.com': availSlots.slice(7, 21),
-    'aisha@scheduler.com': availSlots,
+  // Doctors have partial availability
+  const doctorAvailMap = {
+    'priya@hospital.com': availSlots.slice(0, 28),  // Available first 2 days
+    'raj@hospital.com': availSlots.slice(14, 42),   // Available middle and last day
+    'aisha@hospital.com': availSlots,               // Available all slots
   };
-  for (const [email, slots] of Object.entries(ivAvailMap)) {
-    const ivid = interviewerIds[email];
-    for (const sid of slots) insertIvAvail.run(uuidv4(), ivid, sid);
+  for (const [email, slots] of Object.entries(doctorAvailMap)) {
+    const did = doctorIds[email];
+    for (const sid of slots) insertDoctorAvail.run(uuidv4(), did, sid);
   }
 
   // ── DEFAULT CONSTRAINTS ──────────────────────────────────────────────────────
   const insertConstraint = db.prepare('INSERT OR IGNORE INTO constraints_config (id, type, category, label, value) VALUES (?, ?, ?, ?, ?)');
   const defaultConstraints = [
-    { type: 'hard', cat: 'no_overlap', label: 'No interviewer double booking', value: 'true' },
-    { type: 'hard', cat: 'no_room_conflict', label: 'No room double booking', value: 'true' },
-    { type: 'hard', cat: 'candidate_availability', label: 'Respect candidate availability', value: 'true' },
-    { type: 'hard', cat: 'interviewer_availability', label: 'Respect interviewer availability', value: 'true' },
-    { type: 'soft', cat: 'min_gap', label: 'Min gap between rounds (slots)', value: '1' },
-    { type: 'soft', cat: 'max_per_day', label: 'Max interviews per interviewer per day', value: '5' },
-    { type: 'soft', cat: 'priority_morning', label: 'High priority candidates get morning slots', value: 'true' },
+    { type: 'hard', cat: 'no_overlap', label: 'No doctor double booking', value: 'true' },
+    { type: 'hard', cat: 'no_room_conflict', label: 'No consultation room double booking', value: 'true' },
+    { type: 'hard', cat: 'patient_availability', label: 'Respect patient availability', value: 'true' },
+    { type: 'hard', cat: 'doctor_availability', label: 'Respect doctor availability', value: 'true' },
+    { type: 'soft', cat: 'min_gap', label: 'Min gap between appointments (slots)', value: '1' },
+    { type: 'soft', cat: 'max_per_day', label: 'Max appointments per doctor per day', value: '5' },
+    { type: 'soft', cat: 'priority_morning', label: 'High priority patients get morning slots', value: 'true' },
+    { type: 'soft', cat: 'specialization_match', label: 'Prefer specialization match for treatment', value: 'true' },
   ];
   for (const c of defaultConstraints) {
     insertConstraint.run(uuidv4(), c.type, c.cat, c.label, c.value);
   }
 
-  console.log('✅ Seed complete!');
+  console.log('✅ Hospital appointment scheduling database seed complete!');
   console.log('\n📋 Demo Login Credentials:');
-  console.log('  Admin:       admin@scheduler.com / admin123');
-  console.log('  HR:          hr@scheduler.com / hr1234');
-  console.log('  Interviewer: priya@scheduler.com / pass123');
-  console.log('  Candidate:   alice@candidate.com / pass123');
+  console.log('  Admin:       admin@hospital.com / admin123');
+  console.log('  Receptionist: receptionist@hospital.com / reception1');
+  console.log('  Doctor:      priya@hospital.com / pass123');
+  console.log('  Patient:     alice@patient.com / pass123');
 }
 
 seed().catch(console.error);

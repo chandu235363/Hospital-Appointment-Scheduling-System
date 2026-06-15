@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const JWT_SECRET = process.env.JWT_SECRET || 'interview_scheduler_secret_2024';
+const JWT_SECRET = process.env.JWT_SECRET || 'hospital_scheduler_secret_2024';
 
 const auth = (roles = []) => {
   return (req, res, next) => {

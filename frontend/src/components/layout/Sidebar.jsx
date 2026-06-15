@@ -8,41 +8,53 @@ import {
 const NAV_CONFIG = {
   admin: [
     { section: 'Overview', items: [{ to: '/admin', icon: LayoutDashboard, label: 'Dashboard' }] },
-    { section: 'Management', items: [
-      { to: '/admin/candidates', icon: Users, label: 'Candidates' },
-      { to: '/admin/interviewers', icon: UserCheck, label: 'Interviewers' },
-      { to: '/admin/rooms', icon: DoorOpen, label: 'Rooms' },
-      { to: '/admin/slots', icon: Clock, label: 'Time Slots' },
-      { to: '/admin/constraints', icon: Settings, label: 'Constraints' },
-    ]},
-    { section: 'Scheduling', items: [
-      { to: '/admin/generate', icon: Zap, label: 'Generate Schedule' },
-      { to: '/admin/schedule', icon: Calendar, label: 'View Schedule' },
-    ]},
+    {
+      section: 'Management', items: [
+        { to: '/admin/patients', icon: Users, label: 'Patients' },
+        { to: '/admin/doctors', icon: UserCheck, label: 'Doctors' },
+        { to: '/admin/consultation-rooms', icon: DoorOpen, label: 'Consultation Rooms' },
+        { to: '/admin/appointment-slots', icon: Clock, label: 'Appointment Slots' },
+        { to: '/admin/constraints', icon: Settings, label: 'Constraints' },
+      ]
+    },
+    {
+      section: 'Scheduling', items: [
+        { to: '/admin/generate-schedule', icon: Zap, label: 'Generate Schedule' },
+        { to: '/admin/schedule', icon: Calendar, label: 'View Schedules' },
+      ]
+    },
   ],
-  hr: [
+  receptionist: [
     { section: 'Overview', items: [{ to: '/admin', icon: LayoutDashboard, label: 'Dashboard' }] },
-    { section: 'My Tasks', items: [
-      { to: '/admin/candidates', icon: Users, label: 'Candidates' },
-    ]},
-    { section: 'Scheduling', items: [
-      { to: '/admin/generate', icon: Zap, label: 'Generate Schedule' },
-      { to: '/admin/schedule', icon: Calendar, label: 'View Schedule' },
-    ]},
+    {
+      section: 'My Tasks', items: [
+        { to: '/admin/patients', icon: Users, label: 'Patients' },
+      ]
+    },
+    {
+      section: 'Scheduling', items: [
+        { to: '/admin/generate-schedule', icon: Zap, label: 'Generate Schedule' },
+        { to: '/admin/schedule', icon: Calendar, label: 'View Schedules' },
+      ]
+    },
   ],
-  interviewer: [
-    { section: 'Overview', items: [{ to: '/interviewer', icon: LayoutDashboard, label: 'Dashboard' }] },
-    { section: 'My Work', items: [
-      { to: '/interviewer/schedule', icon: Calendar, label: 'My Schedule' },
-      { to: '/interviewer/availability', icon: Clock, label: 'Availability' },
-    ]},
+  doctor: [
+    { section: 'Overview', items: [{ to: '/doctor', icon: LayoutDashboard, label: 'Dashboard' }] },
+    {
+      section: 'My Work', items: [
+        { to: '/doctor/schedule', icon: Calendar, label: 'My Schedule' },
+        { to: '/doctor/availability', icon: Clock, label: 'Availability' },
+      ]
+    },
   ],
-  candidate: [
-    { section: 'Overview', items: [{ to: '/candidate', icon: LayoutDashboard, label: 'Dashboard' }] },
-    { section: 'My Interviews', items: [
-      { to: '/candidate/interviews', icon: Calendar, label: 'My Interviews' },
-      { to: '/candidate/availability', icon: Clock, label: 'Set Availability' },
-    ]},
+  patient: [
+    { section: 'Overview', items: [{ to: '/patient', icon: LayoutDashboard, label: 'Dashboard' }] },
+    {
+      section: 'My Appointments', items: [
+        { to: '/patient/appointments', icon: Calendar, label: 'My Appointments' },
+        { to: '/patient/availability', icon: Clock, label: 'Set Availability' },
+      ]
+    },
   ],
 };
 
@@ -56,10 +68,10 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <div className="sidebar-logo-icon">🤖</div>
+        <div className="sidebar-logo-icon">🏥</div>
         <div>
-          <div className="sidebar-logo-text">AI Scheduler</div>
-          <div className="sidebar-logo-sub">Interview Platform</div>
+          <div className="sidebar-logo-text">Hospital Scheduler</div>
+          <div className="sidebar-logo-sub">Appointment Booking</div>
         </div>
       </div>
 

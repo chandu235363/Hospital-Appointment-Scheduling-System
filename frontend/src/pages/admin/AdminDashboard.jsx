@@ -8,20 +8,20 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    API.get('/stats').then(r => setStats(r.data)).catch(() => {}).finally(() => setLoading(false));
+    API.get('/stats').then(r => setStats(r.data)).catch(() => { }).finally(() => setLoading(false));
   }, []);
 
   const statCards = [
-    { label: 'Total Candidates', value: stats?.totalCandidates ?? 0, icon: '👥', color: '#6366f1', bg: 'rgba(99,102,241,0.12)' },
-    { label: 'Scheduled', value: stats?.scheduled ?? 0, icon: '✅', color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
-    { label: 'Pending', value: stats?.pending ?? 0, icon: '⏳', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
-    { label: 'Interviewers', value: stats?.totalInterviewers ?? 0, icon: '🎤', color: '#06b6d4', bg: 'rgba(6,182,212,0.12)' },
-    { label: 'Rooms', value: stats?.totalRooms ?? 0, icon: '🚪', color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' },
-    { label: 'Available Slots', value: stats?.totalSlots ?? 0, icon: '🕐', color: '#ec4899', bg: 'rgba(236,72,153,0.12)' },
+    { label: 'Total Patients', value: stats?.totalPatients ?? 0, icon: '🏥', color: '#6366f1', bg: 'rgba(99,102,241,0.12)' },
+    { label: 'Scheduled', value: stats?.scheduledPatients ?? 0, icon: '✅', color: '#10b981', bg: 'rgba(16,185,129,0.12)' },
+    { label: 'Pending', value: stats?.pendingPatients ?? 0, icon: '⏳', color: '#f59e0b', bg: 'rgba(245,158,11,0.12)' },
+    { label: 'Total Doctors', value: stats?.totalDoctors ?? 0, icon: '👨‍⚕️', color: '#06b6d4', bg: 'rgba(6,182,212,0.12)' },
+    { label: 'Consultation Rooms', value: stats?.totalConsultationRooms ?? 0, icon: '🚪', color: '#8b5cf6', bg: 'rgba(139,92,246,0.12)' },
+    { label: 'Available Slots', value: stats?.availableAppointmentSlots ?? 0, icon: '🕐', color: '#ec4899', bg: 'rgba(236,72,153,0.12)' },
   ];
 
   return (
-    <Layout title="Admin Dashboard" subtitle="Overview of all scheduling activity">
+    <Layout title="Hospital Dashboard" subtitle="Overview of all appointment scheduling activity">
       {loading ? (
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--text-muted)', padding: '2rem' }}>
           <span className="spinner" /> Loading...
@@ -44,8 +44,8 @@ export default function AdminDashboard() {
           <div className="card" style={{ marginTop: '1.5rem' }}>
             <div className="card-header">
               <div>
-                <div className="card-title">Recent Schedules</div>
-                <div className="card-subtitle">Last generated interview timetables</div>
+                <div className="card-title">Recent Appointment Schedules</div>
+                <div className="card-subtitle">Last generated appointment timetables</div>
               </div>
             </div>
             {stats?.recentSchedules?.length > 0 ? (
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
               <div className="empty-state">
                 <div className="empty-state-icon">📅</div>
                 <h3>No schedules yet</h3>
-                <p>Generate your first schedule using the AI engine</p>
+                <p>Generate your first appointment schedule using the AI engine</p>
               </div>
             )}
           </div>
@@ -101,10 +101,10 @@ export default function AdminDashboard() {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
               {[
-                { step: '1', title: 'Add Candidates', desc: 'Register candidates with their availability', icon: '👥' },
-                { step: '2', title: 'Add Interviewers', desc: 'Set up interviewers and their schedules', icon: '🎤' },
-                { step: '3', title: 'Configure Rooms', desc: 'Add interview rooms and equipment', icon: '🚪' },
-                { step: '4', title: 'Generate Slots', desc: 'Create available time slots for the drive', icon: '🕐' },
+                { step: '1', title: 'Add Patients', desc: 'Register patients with their medical info', icon: '🏥' },
+                { step: '2', title: 'Add Doctors', desc: 'Set up doctors with specializations', icon: '👨‍⚕️' },
+                { step: '3', title: 'Configure Rooms', desc: 'Add consultation rooms and equipment', icon: '🚪' },
+                { step: '4', title: 'Generate Slots', desc: 'Create available appointment time slots', icon: '🕐' },
                 { step: '5', title: 'Set Constraints', desc: 'Define scheduling rules and preferences', icon: '⚙️' },
                 { step: '6', title: 'Generate Schedule', desc: 'Let AI create the optimal timetable', icon: '🤖' },
               ].map(item => (
